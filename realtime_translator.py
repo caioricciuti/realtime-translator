@@ -131,6 +131,23 @@ class TranslatorApp(ctk.CTk):
         self.memory_slider.set(self.memory_limit)
         self.memory_slider.pack(pady=(0, 10))
 
+        # Additional resource info labels
+        self.total_cpu_cores_label = ctk.CTkLabel(
+            frame, text=f"Total CPU Cores: {psutil.cpu_count()}")
+        self.total_cpu_cores_label.pack(pady=5)
+        self.total_memory_label = ctk.CTkLabel(frame, text=f"Total Memory: {
+                                               psutil.virtual_memory().total // (1024 ** 2)} MB")
+        self.total_memory_label.pack(pady=5)
+        self.available_memory_label = ctk.CTkLabel(frame, text=f"Available Memory: {
+                                                   psutil.virtual_memory().available // (1024 ** 2)} MB")
+        self.available_memory_label.pack(pady=5)
+        self.disk_usage_label = ctk.CTkLabel(frame, text=f"Disk Usage: {
+                                             psutil.disk_usage('/').percent}%")
+        self.disk_usage_label.pack(pady=5)
+        self.network_io_label = ctk.CTkLabel(frame, text=f"Network IO: Sent {psutil.net_io_counters(
+        ).bytes_sent // (1024 ** 2)} MB, Received {psutil.net_io_counters().bytes_recv // (1024 ** 2)} MB")
+        self.network_io_label.pack(pady=5)
+
         save_button = ctk.CTkButton(
             frame, text="Save Configuration", command=self.save_config)
         save_button.pack(pady=10)
@@ -318,6 +335,18 @@ class TranslatorApp(ctk.CTk):
         self.ax1.set_title("CPU Usage")
         self.ax2.set_title("Memory Usage")
         self.canvas.draw()
+
+        self.total_cpu_cores_label.configure(
+            text=f"Total CPU Cores: {psutil.cpu_count()}")
+        self.total_memory_label.configure(
+            text=f"Total Memory: {psutil.virtual_memory().total // (1024 ** 2)} MB")
+        self.available_memory_label.configure(text=f"Available Memory: {
+                                              psutil.virtual_memory().available // (1024 ** 2)} MB")
+        self.disk_usage_label.configure(
+            text=f"Disk Usage: {psutil.disk_usage('/').percent}%")
+        net_io = psutil.net_io_counters()
+        self.network_io_label.configure(text=f"Network IO: Sent {
+                                        net_io.bytes_sent // (1024 ** 2)} MB, Received {net_io.bytes_recv // (1024 ** 2)} MB")
 
         if self.is_translating:
             self.after(1000, self.update_resource_usage)
